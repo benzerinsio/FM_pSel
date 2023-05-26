@@ -16,7 +16,8 @@ type Item struct {
 }
 
 type Produtos struct {
-	Items []Item `xml:"item"`
+	XMLName xml.Name `xml:"produtos"`
+	Items   []Item   `xml:"item"`
 }
 
 func main() {
@@ -41,18 +42,23 @@ func main() {
 	idDesejados := [2]int{403921, 595044}
 	var novosItens []Item
 	for _, item := range produtos.Items {
+		adicionar := true
 		for _, id := range idDesejados {
-			if item.ID != id {
-				novosItens = append(novosItens, item)
+			if item.ID == id {
+				adicionar = false
+				break
 			}
+		}
+		if adicionar {
+			novosItens = append(novosItens, item)
 		}
 	}
 
 	// Atualizar os itens na struct Produtos
 	produtos.Items = novosItens
 
-	// Codificar a estrutura de volta para o XML
-	xmlContent, err := xml.MarshalIndent(produtos.Items, "", "    ")
+	// Codificar a estrutura completa de volta para o XML
+	xmlContent, err := xml.MarshalIndent(produtos, "", "    ")
 	if err != nil {
 		fmt.Println("Erro ao codificar o XML:", err)
 		return
@@ -64,15 +70,4 @@ func main() {
 		fmt.Println("Erro ao escrever no arquivo:", err)
 		return
 	}
-
-	for _, item := range produtos.Items {
-		fmt.Println("ID:", item.ID)
-		fmt.Println("Title:", item.Title)
-		fmt.Println("Price:", item.Price)
-		fmt.Println("Link:", item.Link)
-		fmt.Println("Image Link:", item.ImageLink)
-		fmt.Println("Product Type:", item.ProductType)
-		fmt.Println()
-	}
-
 }
