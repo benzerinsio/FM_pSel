@@ -4,6 +4,8 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
+	"strconv"
+	"strings"
 )
 
 type Item struct {
@@ -38,7 +40,7 @@ func main() {
 		return
 	}
 
-	// Remover o item com o ID desejado
+	// Tratamentos desejados
 	idDesejados := [2]int{403921, 595044}
 	var novosItens []Item
 	for _, item := range produtos.Items {
@@ -50,6 +52,17 @@ func main() {
 			}
 		}
 		if adicionar {
+			nomeProduto := strings.ReplaceAll(item.Link, "www.loja.com.br/p/", "")
+			nomeProduto = strings.ReplaceAll(nomeProduto, "\"", "")
+			nomeProduto += ".jpg"
+			nomeImage := strings.ReplaceAll(item.ImageLink, "www.loja.com.br/imagens/", "")
+			nomeImage = strings.ReplaceAll(nomeImage, "\"", "")
+			if nomeProduto != nomeImage {
+				item.ImageLink = "\"www.loja.com.br/imagens/" + nomeProduto + "\""
+
+				fmt.Println("Corrigido: " + strconv.Itoa(item.ID))
+			}
+			item.Price = strings.ReplaceAll(item.Price, "BRL", "R$")
 			novosItens = append(novosItens, item)
 		}
 	}
