@@ -4,7 +4,6 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"strings"
 )
 
@@ -17,70 +16,75 @@ type Item struct {
 	ProductType string `xml:"product_type"`
 }
 
-type Produtos struct {
+type Products struct {
 	XMLName xml.Name `xml:"produtos"`
 	Items   []Item   `xml:"item"`
 }
 
 func main() {
-	// Ler o conteúdo do arquivo XML
+	// Read the content of the XML file
 	content, err := ioutil.ReadFile("psel.xml")
 	if err != nil {
-		fmt.Println("Erro ao ler o arquivo:", err)
+		fmt.Println("Error reading the file: ", err)
 		return
 	}
 
-	// Criar uma instância da struct que representa o XML
-	var produtos Produtos
+	var products Products
 
-	// Decodificar o XML
-	err = xml.Unmarshal(content, &produtos)
+	// Decode the XML content
+	err = xml.Unmarshal(content, &products)
 	if err != nil {
-		fmt.Println("Erro ao decodificar o XML:", err)
+		fmt.Println("Error decoding the XML: ", err)
 		return
 	}
 
-	// Tratamentos desejados
-	idDesejados := [2]int{403921, 595044}
-	var novosItens []Item
-	for _, item := range produtos.Items {
-		adicionar := true
-		for _, id := range idDesejados {
-			if item.ID == id {
-				adicionar = false
-				break
-			}
-		}
-		if adicionar {
-			nomeProduto := strings.ReplaceAll(item.Link, "www.loja.com.br/p/", "")
-			nomeProduto = strings.ReplaceAll(nomeProduto, "\"", "")
-			nomeProduto += ".jpg"
-			nomeImage := strings.ReplaceAll(item.ImageLink, "www.loja.com.br/imagens/", "")
-			nomeImage = strings.ReplaceAll(nomeImage, "\"", "")
-			if nomeProduto != nomeImage {
-				item.ImageLink = "\"www.loja.com.br/imagens/" + nomeProduto + "\""
+	// Creating a Map to group de undesired ids for further remove them
+	removedIDs := map[int]struct{}{
+		403921: {},
+		595044: {},
+	}
 
-				fmt.Println("Corrigido: " + strconv.Itoa(item.ID))
+	var newItems []Item
+
+	// Getting only the value item for the iteration
+	for _, item := range products.Items {
+		// Checking if the value is present in the undesired ids (don't need the value itself)
+		if _, ok := removedIDs[item.ID]; !ok {
+			// Extract the product name from the link to compare with the image
+			productName := strings.TrimPrefix(item.Link, "www.loja.com.br/p/")
+			productName = strings.Trim(productName, "\"")
+			productName += ".jpg"
+
+			// Extract the image name from the image link to compare with the product
+			imageName := strings.TrimPrefix(item.ImageLink, "www.loja.com.br/imagens/")
+			imageName = strings.Trim(imageName, "\"")
+
+			// Check if the product name and image name are different and correcting if the case
+			if productName != imageName {
+				item.ImageLink = "\"www.loja.com.br/imagens/" + productName + "\""
 			}
+
+			// Replace "BRL" with "R$" in the price field
 			item.Price = strings.ReplaceAll(item.Price, "BRL", "R$")
-			novosItens = append(novosItens, item)
+
+			newItems = append(newItems, item)
 		}
 	}
 
-	// Atualizar os itens na struct Produtos
-	produtos.Items = novosItens
+	// Updating the changes to the struct
+	products.Items = newItems
 
-	// Codificar a estrutura completa de volta para o XML
-	xmlContent, err := xml.MarshalIndent(produtos, "", "    ")
+	// Encode the updated structure back to XML
+	xmlContent, err := xml.MarshalIndent(products, "", "    ")
 	if err != nil {
-		fmt.Println("Erro ao codificar o XML:", err)
+		fmt.Println("Error encoding the XML:", err)
 		return
 	}
 
-	// Escrever o conteúdo atualizado no arquivo
-	err = ioutil.WriteFile("arquivo.xml", xmlContent, 0644)
+	// Write the updated content to a new file
+	err = ioutil.WriteFile("file.xml", xmlContent, 0644)
 	if err != nil {
-		fmt.Println("Erro ao escrever no arquivo:", err)
+		fmt.Println("Error writing the file:", err)
 		return
 	}
 }
