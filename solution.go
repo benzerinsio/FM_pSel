@@ -44,6 +44,7 @@ func main() {
 		595044: {},
 	}
 
+	//New Array for storing the updated informations
 	var newItems []Item
 
 	// Getting only the value item for the iteration
@@ -67,12 +68,25 @@ func main() {
 			// Replace "BRL" with "R$" in the price field
 			item.Price = strings.ReplaceAll(item.Price, "BRL", "R$")
 
+			// Appending the updated values (item) into the newItems array
 			newItems = append(newItems, item)
 		}
 	}
 
 	// Updating the changes to the struct
 	products.Items = newItems
+
+	// Printing the new feed
+	for index, item := range products.Items {
+		fmt.Println("Product ", index+1)
+		fmt.Println("ID: ", item.ID)
+		fmt.Println("Title: ", item.Title)
+		fmt.Println("Price: ", item.Price)
+		fmt.Println("Link: ", item.Link)
+		fmt.Println("Image Link: ", item.ImageLink)
+		fmt.Println("Product Type: ", item.ProductType)
+		fmt.Println("--------------------------------------------------")
+	}
 
 	// Encode the updated structure back to XML
 	xmlContent, err := xml.MarshalIndent(products, "", "    ")
