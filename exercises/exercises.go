@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	"unicode/utf8"
 )
 
@@ -98,11 +99,15 @@ func main() {
 
 	var newPerson []Person
 
+	// Iterating through slice and checking each people's name length
+
 	for _, person := range people {
 		if length := utf8.RuneCountInString(person.name); length <= 20 {
 			newPerson = append(newPerson, person)
 		}
 	}
+
+	// Printing out the new structure
 
 	for _, value := range newPerson {
 		fmt.Println("Name: " + value.name)
@@ -110,7 +115,27 @@ func main() {
 		fmt.Println("Job: " + value.job_role)
 	}
 
+	fmt.Println("------------------------------------------------------")
+
 	// 4 - Change the name of each person to their first name.
+
+	var firstNameOnly []Person
+
+	// Iterating through slice and getting each people's first name only
+
+	for _, value := range people {
+		firstName := strings.Split(value.name, " ")
+		value.name = firstName[0]
+		firstNameOnly = append(firstNameOnly, value)
+	}
+
+	// Printing out the new structure
+
+	for _, value := range firstNameOnly {
+		fmt.Println("Name: " + value.name)
+		fmt.Println("Age: ", value.age)
+		fmt.Println("Job: " + value.job_role)
+	}
 
 	// 5 - Add a new person through keyboard input.
 
