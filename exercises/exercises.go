@@ -20,6 +20,7 @@ func main() {
 
 	letters := map[rune]int{}
 
+	// Reading the word from keyboard
 	fmt.Println("Type the word: ")
 	fmt.Scanln(&word)
 
@@ -137,7 +138,31 @@ func main() {
 		fmt.Println("Job: " + value.job_role)
 	}
 
+	fmt.Println("------------------------------------------------------")
+
 	// 5 - Add a new person through keyboard input.
+
+	keyboardInput := []Person{}
+
+	// Reading all the values from keyboard
+
+	p7 := Person{}
+	fmt.Print("Type the name: ")
+	fmt.Scan(&p7.name)
+	fmt.Print("Type the age: ")
+	fmt.Scan(&p7.age)
+	fmt.Print("Type the job: ")
+	fmt.Scan(&p7.job_role)
+	keyboardInput = append(keyboardInput, p7)
+
+	// Printing out the final structure
+
+	for _, value := range keyboardInput {
+		fmt.Println("Name: " + value.name)
+		fmt.Println("Age: ", value.age)
+		fmt.Println("Job: " + value.job_role)
+
+	}
 
 	// 6 - Create a map something and the for and if method to get used to it
 }
