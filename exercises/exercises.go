@@ -164,5 +164,4 @@ func main() {
 
 	}
 
-	// 6 - Create a map something and the for and if method to get used to it
 }
